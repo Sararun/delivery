@@ -1,13 +1,16 @@
 package microarch.delivery.core.domain.model.kernel;
 
+import libs.ddd.ValueObject;
 import libs.errs.Error;
 import libs.errs.GeneralErrors;
 import libs.errs.Result;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 
+import java.util.List;
+
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class Location {
+public class Location extends ValueObject<Location> {
     public static final int X_MIN_VALUE = 1;
     public static final int X_MAX_VALUE = 10;
     public static final int Y_MIN_VALUE = 1;
@@ -28,5 +31,10 @@ public class Location {
 
     public int calculateDistance(Location other) {
         return Math.abs(this.X_Horizontal - other.X_Horizontal) + Math.abs(this.Y_Vertical - other.Y_Vertical);
+    }
+
+    @Override
+    protected Iterable<Object> equalityComponents() {
+        return List.of(X_Horizontal, Y_Vertical);
     }
 }
