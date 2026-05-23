@@ -58,4 +58,28 @@ public class LocationTest {
 
         assertEquals(0, location.calculateDistance(location));
     }
+
+    @Test
+    void equals_ShouldReturnTrue_WhenXAndYAreEqual() {
+        var a = Location.create(3, 7).getValue();
+        var b = Location.create(3, 7).getValue();
+
+        assertEquals(a, b);
+    }
+
+    @Test
+    void equals_ShouldReturnFalse_WhenXDiffers() {
+        var a = Location.create(3, 7).getValue();
+        var b = Location.create(4, 7).getValue();
+
+        assertNotEquals(a, b);
+    }
+
+    @Test
+    void equals_ShouldReturnFalse_WhenYDiffers() {
+        var a = Location.create(3, 7).getValue();
+        var b = Location.create(3, 8).getValue();
+
+        assertNotEquals(a, b);
+    }
 }
