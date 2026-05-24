@@ -1,10 +1,8 @@
 package microarch.delivery.core.domain.model.kernel.Courier;
 
 import libs.ddd.BaseEntity;
+import libs.errs.*;
 import libs.errs.Error;
-import libs.errs.GeneralErrors;
-import libs.errs.Result;
-import libs.errs.UnitResult;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,6 +12,7 @@ import com.github.f4b6a3.uuid.UuidCreator;
 import microarch.delivery.core.domain.model.kernel.Volume;
 
 import java.util.UUID;
+
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Assignment extends BaseEntity<UUID> {
@@ -25,16 +24,13 @@ public class Assignment extends BaseEntity<UUID> {
     private Status status;
 
     public static Result<Assignment, Error> create(UUID orderId, Volume volume, Location location) {
-        if (orderId == null) {
-            return Result.failure(GeneralErrors.valueIsRequired("orderId"));
-        }
-
-        if (volume == null) {
-            return Result.failure(GeneralErrors.valueIsRequired("volume"));
-        }
-
-        if (location == null) {
-            return Result.failure(GeneralErrors.valueIsRequired("location"));
+        Error error = Guard.combine(
+                Guard.againstNullOrEmpty(orderId, "orderId"),
+                volume == null ? GeneralErrors.valueIsRequired("volume") : null,
+                location == null ? GeneralErrors.valueIsRequired("location") : null
+        );
+        if (error != null) {
+            return Result.failure(error);
         }
 
         return Result.success(
