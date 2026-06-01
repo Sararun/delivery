@@ -6,14 +6,17 @@ import libs.errs.*;
 import libs.errs.Error;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import microarch.delivery.core.domain.model.kernel.Location;
 import microarch.delivery.core.domain.model.kernel.Order.Order;
 import microarch.delivery.core.domain.model.kernel.Volume;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
+@Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Courier extends Aggregate<UUID> {
 
@@ -67,15 +70,8 @@ public class Courier extends Aggregate<UUID> {
         return assignment.get().finish(currentLocation);
     }
 
-    public UnitResult<Error> move(Location target) {
-        if (target == null)
-            return UnitResult.failure(GeneralErrors.valueIsRequired("target"));
-
-        var newLocation = currentLocation.moveTowards(target);
-        if (newLocation.isFailure())
-            return UnitResult.failure(newLocation.getError());
-
-        this.currentLocation = newLocation.getValue();
-        return UnitResult.success();
+    public void move(Location location) {
+        Objects.requireNonNull(location);
+        this.currentLocation = location;
     }
 }

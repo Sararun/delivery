@@ -146,33 +146,19 @@ public class CourierTest {
 
 
     @Test
-    void move_ShouldSucceed_WhenTargetIsValid() {
+    void move_ShouldUpdateLocation_WhenLocationIsValid() {
         var courier = makeCourier();
-        var target = Location.create(6, 5).getValue();
+        var newLocation = Location.create(6, 5).getValue();
 
-        var result = courier.move(target);
+        courier.move(newLocation);
 
-        assertTrue(result.isSuccess());
+        assertEquals(newLocation, courier.getCurrentLocation());
     }
 
     @Test
-    void move_ShouldFail_WhenTargetIsNull() {
+    void move_ShouldThrow_WhenLocationIsNull() {
         var courier = makeCourier();
 
-        var result = courier.move(null);
-
-        assertTrue(result.isFailure());
-    }
-
-    @Test
-    void move_ShouldMoveOnlyOneStepAtATime() {
-        var courier = Courier.create(NAME, Location.create(1, 1).getValue()).getValue();
-        var target = Location.create(5, 5).getValue();
-
-        courier.move(target);
-        courier.move(target);
-
-        // after 2 moves from (1,1) toward (5,5) courier should be at (3,1) or similar — just check it doesn't jump
-        assertTrue(courier.move(target).isSuccess());
+        assertThrows(NullPointerException.class, () -> courier.move(null));
     }
 }

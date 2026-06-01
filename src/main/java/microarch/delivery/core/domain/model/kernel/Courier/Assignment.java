@@ -24,24 +24,15 @@ public class Assignment extends BaseEntity<UUID> {
     private Status status;
 
     public static Result<Assignment, Error> create(UUID orderId, Volume volume, Location location) {
-        Error error = Guard.combine(
-                Guard.againstNullOrEmpty(orderId, "orderId"),
+        Error error = Guard.combine(Guard.againstNullOrEmpty(orderId, "orderId"),
                 volume == null ? GeneralErrors.valueIsRequired("volume") : null,
-                location == null ? GeneralErrors.valueIsRequired("location") : null
-        );
+                location == null ? GeneralErrors.valueIsRequired("location") : null);
         if (error != null) {
             return Result.failure(error);
         }
 
-        return Result.success(
-                new Assignment(
-                        UuidCreator.getTimeOrderedEpoch(),
-                        orderId,
-                        volume,
-                        location,
-                        Status.Assigned
-                )
-        );
+        return Result
+                .success(new Assignment(UuidCreator.getTimeOrderedEpoch(), orderId, volume, location, Status.Assigned));
     }
 
     public UnitResult<Error> finish(Location location) {
