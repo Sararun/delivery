@@ -37,11 +37,12 @@ public class Courier extends Aggregate<UUID> {
         if (order == null)
             return UnitResult.failure(GeneralErrors.valueIsRequired("order"));
 
-        int totalVolume = assignments.stream().mapToInt(a -> a.getVolume().getValue()).sum();
+        var totalVolume = assignments.stream().map(Assignment::getVolume).reduce(Volume.zero(), Volume::add);
+        var newTotal = totalVolume.add(order.getVolume());
 
-        if (totalVolume + order.getVolume().getValue() > maxVolume.getValue()) {
-            return UnitResult.failure(GeneralErrors.valueMustBeLessOrEqual("volume",
-                    totalVolume + order.getVolume().getValue(), maxVolume.getValue()));
+        if (newTotal.isGreaterThan(maxVolume)) {
+            return UnitResult
+                    .failure(GeneralErrors.valueMustBeLessOrEqual("volume", newTotal.getValue(), maxVolume.getValue()));
         }
 
         var assignment = Assignment.create(order.getId(), order.getVolume(), order.getLocation());
@@ -70,20 +71,9 @@ public class Courier extends Aggregate<UUID> {
         if (target == null)
             return UnitResult.failure(GeneralErrors.valueIsRequired("target"));
 
-        int difX = target.getX_Horizontal() - currentLocation.getX_Horizontal();
-        int difY = target.getY_Vertical() - currentLocation.getY_Vertical();
-        int cruisingRange = 1;
-
-        int moveX = Math.clamp(difX, -cruisingRange, cruisingRange);
-        cruisingRange -= Math.abs(moveX);
-        int moveY = Math.clamp(difY, -cruisingRange, cruisingRange);
-
-        var newLocation = Location.create(
-                currentLocation.getX_Horizontal() + moveX,
-                currentLocation.getY_Vertical() + moveY
-        );
-
-        if (newLocation.isFailure()) return UnitResult.failure(newLocation.getError());
+        var newLocation = currentLocation.moveTowards(target);
+        if (newLocation.isFailure())
+            return UnitResult.failure(newLocation.getError());
 
         this.currentLocation = newLocation.getValue();
         return UnitResult.success();

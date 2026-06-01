@@ -36,6 +36,22 @@ public class Location extends ValueObject<Location> {
         return Math.abs(this.X_Horizontal - other.X_Horizontal) + Math.abs(this.Y_Vertical - other.Y_Vertical);
     }
 
+    public boolean isNear(Location other) {
+        return calculateDistance(other) <= 1;
+    }
+
+    public Result<Location, Error> moveTowards(Location target) {
+        int difX = target.X_Horizontal - this.X_Horizontal;
+        int difY = target.Y_Vertical - this.Y_Vertical;
+        int cruisingRange = 1;
+
+        int moveX = Math.clamp(difX, -cruisingRange, cruisingRange);
+        cruisingRange -= Math.abs(moveX);
+        int moveY = Math.clamp(difY, -cruisingRange, cruisingRange);
+
+        return Location.create(this.X_Horizontal + moveX, this.Y_Vertical + moveY);
+    }
+
     @Override
     protected Iterable<Object> equalityComponents() {
         return List.of(X_Horizontal, Y_Vertical);

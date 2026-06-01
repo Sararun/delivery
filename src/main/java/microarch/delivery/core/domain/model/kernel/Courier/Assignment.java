@@ -45,7 +45,7 @@ public class Assignment extends BaseEntity<UUID> {
     }
 
     public UnitResult<Error> finish(Location location) {
-        if (this.location.calculateDistance(location) > 1) {
+        if (!this.location.isNear(location)) {
             return UnitResult.failure(GeneralErrors.valueIsInvalid("location", location));
         }
         this.status = Status.Completed;
