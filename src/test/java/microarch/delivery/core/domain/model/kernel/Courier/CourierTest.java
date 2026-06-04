@@ -22,7 +22,6 @@ public class CourierTest {
         return Courier.create(NAME, LOCATION).getValue();
     }
 
-
     @Test
     void create_ShouldSucceed_WhenAllParamsAreValid() {
         var result = Courier.create(NAME, LOCATION);
@@ -51,7 +50,6 @@ public class CourierTest {
 
         assertTrue(result.isFailure());
     }
-
 
     @Test
     void addOrder_ShouldSucceed_WhenVolumeIsWithinLimit() {
@@ -102,7 +100,6 @@ public class CourierTest {
         assertTrue(result.isFailure());
     }
 
-
     @Test
     void completeAssignment_ShouldSucceed_WhenCourierIsAtOrderLocation() {
         var courier = makeCourier();
@@ -144,7 +141,6 @@ public class CourierTest {
         assertTrue(result.isFailure());
     }
 
-
     @Test
     void move_ShouldUpdateLocation_WhenLocationIsValid() {
         var courier = makeCourier();
@@ -160,5 +156,36 @@ public class CourierTest {
         var courier = makeCourier();
 
         assertThrows(NullPointerException.class, () -> courier.move(null));
+    }
+
+    @Test
+    void canAccept_ShouldReturnTrue_WhenCourierHasCapacity() {
+        var courier = makeCourier();
+        var order = makeOrder(10);
+
+        assertTrue(courier.canAccept(order));
+    }
+
+    @Test
+    void canAccept_ShouldReturnTrue_WhenVolumeExactlyFits() {
+        var courier = makeCourier();
+        var order = makeOrder(20);
+
+        assertTrue(courier.canAccept(order));
+    }
+
+    @Test
+    void canAccept_ShouldReturnFalse_WhenCourierIsFull() {
+        var courier = makeCourier();
+        courier.addOrder(makeOrder(20));
+
+        assertFalse(courier.canAccept(makeOrder(1)));
+    }
+
+    @Test
+    void canAccept_ShouldReturnFalse_WhenOrderIsNull() {
+        var courier = makeCourier();
+
+        assertFalse(courier.canAccept(null));
     }
 }

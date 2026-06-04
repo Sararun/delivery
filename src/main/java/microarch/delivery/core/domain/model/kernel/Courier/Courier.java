@@ -36,14 +36,20 @@ public class Courier extends Aggregate<UUID> {
                 Volume.create(20).getValueOrThrow(), new ArrayList<>()));
     }
 
+    public boolean canAccept(Order order) {
+        if (order == null)
+            return false;
+        var totalVolume = assignments.stream().map(Assignment::getVolume).reduce(Volume.zero(), Volume::plus);
+        return !totalVolume.plus(order.getVolume()).isGreaterThan(maxVolume);
+    }
+
     public UnitResult<Error> addOrder(Order order) {
         if (order == null)
             return UnitResult.failure(GeneralErrors.valueIsRequired("order"));
 
-        var totalVolume = assignments.stream().map(Assignment::getVolume).reduce(Volume.zero(), Volume::add);
-        var newTotal = totalVolume.add(order.getVolume());
-
-        if (newTotal.isGreaterThan(maxVolume)) {
+        if (!canAccept(order)) {
+            var newTotal = assignments.stream().map(Assignment::getVolume).reduce(Volume.zero(), Volume::plus)
+                    .plus(order.getVolume());
             return UnitResult
                     .failure(GeneralErrors.valueMustBeLessOrEqual("volume", newTotal.getValue(), maxVolume.getValue()));
         }
