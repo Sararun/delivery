@@ -51,7 +51,6 @@ public class OrderTest {
         assertTrue(result.isFailure());
     }
 
-
     @Test
     void assign_ShouldSucceed_WhenStatusIsCreated() {
         var order = makeOrder();
@@ -83,7 +82,6 @@ public class OrderTest {
 
         assertTrue(result.isFailure());
     }
-
 
     @Test
     void finish_ShouldSucceed_WhenStatusIsAssigned() {

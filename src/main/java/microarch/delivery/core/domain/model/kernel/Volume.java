@@ -27,7 +27,7 @@ public class Volume extends ValueObject<Volume> {
         return new Volume(0);
     }
 
-    public Volume add(Volume other) {
+    public Volume plus(Volume other) {
         return new Volume(this.value + other.value);
     }
 

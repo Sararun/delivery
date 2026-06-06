@@ -82,4 +82,41 @@ public class LocationTest {
 
         assertNotEquals(a, b);
     }
+
+    @Test
+    void create_ShouldSucceed_WhenValuesAreAtMinBoundary() {
+        var result = Location.create(1, 1);
+
+        assertTrue(result.isSuccess());
+    }
+
+    @Test
+    void create_ShouldSucceed_WhenValuesAreAtMaxBoundary() {
+        var result = Location.create(10, 10);
+
+        assertTrue(result.isSuccess());
+    }
+
+    @Test
+    void isNear_ShouldReturnTrue_WhenSameLocation() {
+        var location = Location.create(5, 5).getValue();
+
+        assertTrue(location.isNear(location));
+    }
+
+    @Test
+    void isNear_ShouldReturnTrue_WhenOneStepAway() {
+        var a = Location.create(5, 5).getValue();
+        var b = Location.create(5, 6).getValue();
+
+        assertTrue(a.isNear(b));
+    }
+
+    @Test
+    void isNear_ShouldReturnFalse_WhenTwoStepsAway() {
+        var a = Location.create(5, 5).getValue();
+        var b = Location.create(5, 7).getValue();
+
+        assertFalse(a.isNear(b));
+    }
 }
