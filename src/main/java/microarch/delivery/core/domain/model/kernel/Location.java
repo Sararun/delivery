@@ -1,5 +1,6 @@
 package microarch.delivery.core.domain.model.kernel;
 
+import jakarta.persistence.Embeddable;
 import libs.ddd.ValueObject;
 import libs.errs.Error;
 import libs.errs.GeneralErrors;
@@ -7,11 +8,14 @@ import libs.errs.Result;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Getter
+@Embeddable
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 public class Location extends ValueObject<Location> {
     public static final int X_MIN_VALUE = 1;
     public static final int X_MAX_VALUE = 10;

@@ -1,12 +1,18 @@
 package microarch.delivery.core.domain.model.kernel.Courier;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import com.github.f4b6a3.uuid.UuidCreator;
 import libs.ddd.Aggregate;
 import libs.errs.*;
 import libs.errs.Error;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import microarch.delivery.core.domain.model.kernel.Location;
 import microarch.delivery.core.domain.model.kernel.Order.Order;
 import microarch.delivery.core.domain.model.kernel.Volume;
@@ -17,14 +23,30 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Entity
+@Table(name = "couriers")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Courier extends Aggregate<UUID> {
 
-    private UUID id;
     private String name;
+
+    @Embedded
     private Location currentLocation;
-    private final Volume maxVolume;
+
+    @Embedded
+    private Volume maxVolume;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "courier_id")
     private List<Assignment> assignments;
+
+    private Courier(UUID id, String name, Location currentLocation, Volume maxVolume, List<Assignment> assignments) {
+        super(id);
+        this.name = name;
+        this.currentLocation = currentLocation;
+        this.maxVolume = maxVolume;
+        this.assignments = assignments;
+    }
 
     public static Result<Courier, Error> create(String name, Location currentLocation) {
         Error error = Guard.combine(Guard.againstNullOrEmpty(name, "name"),

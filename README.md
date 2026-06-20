@@ -9,6 +9,39 @@
 
 ---
 
+# 🐳 Локальная разработка в Docker (Dev Containers)
+
+Вся среда для разработки описана в `docker-compose.yml` и каталоге `.devcontainer/`.
+Поднимаются два контейнера:
+
+| Сервис | Что это       | Порт |
+|--------|---------------|------|
+| `app`  | Java          |      |
+| `db`   | PostgreSQL 16 | 5432 |
+
+## Вариант 1. Через IDE (рекомендуется)
+
+IntelliJ IDEA и VS Code умеют открывать проект прямо внутри контейнера
+(«Dev Container») — Java, Maven и БД поднимутся автоматически.
+
+- **IntelliJ IDEA:** *Remote Development → Dev Containers*, указать
+  `.devcontainer/devcontainer.json` (либо принять подсказку IDE при открытии проекта).
+- **VS Code:** установить расширение *Dev Containers*, затем *Reopen in Container*.
+
+Дальше приложение запускается кнопкой Run или командой `mvn spring-boot:run`
+во встроенном терминале.
+
+## Вариант 2. Через терминал (без IDE)
+
+```bash
+docker compose up -d
+docker compose exec app mvn spring-boot:run
+```
+
+Приложение будет доступно на http://localhost:8082
+К базе можно подключиться с хоста: `localhost:5432`, имя БД / пользователь / пароль — `delivery`.
+
+Полезные команды:
 # Запросы к БД
 ```
 SELECT * public.assignments;

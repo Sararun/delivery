@@ -1,0 +1,8 @@
+# Что НЕ нужно отправлять в контекст сборки Docker (ускоряет build).
+.git
+.idea
+target
+build
+out
+*.iml
+*.log
