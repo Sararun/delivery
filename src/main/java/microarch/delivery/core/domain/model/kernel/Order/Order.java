@@ -1,25 +1,41 @@
 package microarch.delivery.core.domain.model.kernel.Order;
 
-import com.github.f4b6a3.uuid.UuidCreator;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Table;
 import libs.ddd.Aggregate;
 import libs.errs.*;
 import libs.errs.Error;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import microarch.delivery.core.domain.model.kernel.Courier.Assignment;
+import lombok.NoArgsConstructor;
 import microarch.delivery.core.domain.model.kernel.Location;
 import microarch.delivery.core.domain.model.kernel.Volume;
 
 import java.util.UUID;
 
 @Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Entity
+@Table(name = "orders")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Order extends Aggregate<UUID> {
-    private UUID id;
+    @Embedded
     private Location location;
+
+    @Embedded
     private Volume volume;
+
+    @Enumerated(EnumType.STRING)
     private Status status;
+
+    private Order(UUID id, Location location, Volume volume, Status status) {
+        super(id);
+        this.location = location;
+        this.volume = volume;
+        this.status = status;
+    }
 
     public static Result<Order, Error> create(UUID id, Location location, Volume volume) {
         Error error = Guard.combine(Guard.againstNullOrEmpty(id, "id"),
