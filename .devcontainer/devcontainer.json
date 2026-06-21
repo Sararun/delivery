@@ -1,0 +1,32 @@
+{
+  "name": "delivery (Java 21 + PostgreSQL)",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "shutdownAction": "stopCompose",
+  "forwardPorts": [8082, 5432],
+  "portsAttributes": {
+    "8082": { "label": "delivery HTTP" },
+    "5432": { "label": "PostgreSQL" }
+  },
+
+  "postCreateCommand": "mvn -B -DskipTests compile || true",
+
+  "remoteUser": "vscode",
+
+  // Настройки ниже применяет только VS Code; IntelliJ IDEA их игнорирует.
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vscjava.vscode-java-pack",
+        "vscjava.vscode-maven",
+        "vmware.vscode-spring-boot",
+        "ms-azuretools.vscode-docker"
+      ],
+      "settings": {
+        "java.configuration.updateBuildConfiguration": "automatic",
+        "java.server.launchMode": "Standard"
+      }
+    }
+  }
+}
