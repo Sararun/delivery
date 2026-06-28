@@ -5,6 +5,7 @@ import microarch.delivery.core.domain.model.kernel.Order.Order;
 import microarch.delivery.core.domain.model.kernel.Order.Status;
 import microarch.delivery.core.domain.model.kernel.Volume;
 import microarch.delivery.core.ports.OrderRepositoryPort;
+import microarch.delivery.core.ports.UnitOfWork;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -22,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import(OrderRepository.class)
+@Import({ OrderRepository.class, JpaUnitOfWork.class })
 @Testcontainers
 class OrderRepositoryIntegrationTest {
 
@@ -38,6 +39,9 @@ class OrderRepositoryIntegrationTest {
 
     @Autowired
     private OrderRepositoryPort orderRepository;
+
+    @Autowired
+    private UnitOfWork unitOfWork;
 
     private static Order makeOrder() {
         return Order.create(UuidCreator.getTimeOrderedEpoch(), Location.create(5, 5).getValue(),
@@ -93,12 +97,14 @@ class OrderRepositoryIntegrationTest {
     }
 
     @Test
-    void update_ShouldPersistStatusChange() {
+    void commit_ShouldPersistStatusChange_WhenLoadedOrderIsMutated() {
         var order = makeOrder();
         orderRepository.add(order);
+        unitOfWork.commit();
 
-        order.assign();
-        orderRepository.update(order);
+        var loaded = orderRepository.getById(order.getId()).orElseThrow();
+        loaded.assign();
+        unitOfWork.commit();
 
         var found = orderRepository.getById(order.getId());
         assertTrue(found.isPresent());
