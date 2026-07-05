@@ -9,11 +9,11 @@ import java.util.UUID;
 public interface OrderRepositoryPort {
     void add(Order order);
 
-    void update(Order order);
-
     Optional<Order> getById(UUID orderId);
 
     Optional<Order> getFirstInCreatedStatus();
 
     List<Order> getAllInAssignedStatus();
+
+    List<Order> getAllNotCompleted();
 }

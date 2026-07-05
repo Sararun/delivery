@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.EnumSet;
 
 @Repository
 @RequiredArgsConstructor
@@ -20,12 +21,6 @@ public class OrderRepository implements OrderRepositoryPort {
     @Override
     @Transactional
     public void add(Order order) {
-        orderJpaRepository.save(order);
-    }
-
-    @Override
-    @Transactional
-    public void update(Order order) {
         orderJpaRepository.save(order);
     }
 
@@ -42,5 +37,10 @@ public class OrderRepository implements OrderRepositoryPort {
     @Override
     public List<Order> getAllInAssignedStatus() {
         return orderJpaRepository.findAllByStatus(Status.Assigned);
+    }
+
+    @Override
+    public List<Order> getAllNotCompleted() {
+        return orderJpaRepository.findAllByStatusIn(EnumSet.of(Status.Created, Status.Assigned));
     }
 }

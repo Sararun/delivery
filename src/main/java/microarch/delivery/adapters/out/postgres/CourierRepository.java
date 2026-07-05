@@ -23,12 +23,6 @@ public class CourierRepository implements CourierRepositoryPort {
     }
 
     @Override
-    @Transactional
-    public void update(Courier courier) {
-        courierJpaRepository.save(courier);
-    }
-
-    @Override
     public Optional<Courier> getById(UUID courierId) {
         return courierJpaRepository.findById(courierId);
     }

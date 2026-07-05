@@ -5,6 +5,7 @@ import microarch.delivery.core.domain.model.kernel.Location;
 import microarch.delivery.core.domain.model.kernel.Order.Order;
 import microarch.delivery.core.domain.model.kernel.Volume;
 import microarch.delivery.core.ports.CourierRepositoryPort;
+import microarch.delivery.core.ports.UnitOfWork;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -22,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import(CourierRepository.class)
+@Import({ CourierRepository.class, JpaUnitOfWork.class })
 @Testcontainers
 class CourierRepositoryIntegrationTest {
 
@@ -38,6 +39,9 @@ class CourierRepositoryIntegrationTest {
 
     @Autowired
     private CourierRepositoryPort courierRepository;
+
+    @Autowired
+    private UnitOfWork unitOfWork;
 
     private static Courier makeCourier() {
         return Courier.create("Ivan", Location.create(5, 5).getValue()).getValue();
@@ -66,13 +70,15 @@ class CourierRepositoryIntegrationTest {
     }
 
     @Test
-    void update_ShouldPersistLocationChange() {
+    void commit_ShouldPersistLocationChange_WhenLoadedCourierIsMutated() {
         var courier = makeCourier();
         courierRepository.add(courier);
+        unitOfWork.commit();
 
+        var loaded = courierRepository.getById(courier.getId()).orElseThrow();
         var newLocation = Location.create(3, 7).getValue();
-        courier.move(newLocation);
-        courierRepository.update(courier);
+        loaded.move(newLocation);
+        unitOfWork.commit();
 
         var found = courierRepository.getById(courier.getId());
         assertTrue(found.isPresent());

@@ -9,8 +9,6 @@ import java.util.UUID;
 public interface CourierRepositoryPort {
     void add(Courier courier);
 
-    void update(Courier courier);
-
     Optional<Courier> getById(UUID courierId);
 
     List<Courier> getAll();
