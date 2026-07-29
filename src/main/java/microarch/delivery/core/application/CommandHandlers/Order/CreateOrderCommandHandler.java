@@ -4,15 +4,13 @@ import libs.errs.Error;
 import libs.errs.Result;
 import lombok.RequiredArgsConstructor;
 import microarch.delivery.core.application.Commands.Order.CreateOrderCommand;
-import microarch.delivery.core.domain.model.kernel.Location;
 import microarch.delivery.core.domain.model.kernel.Order.Order;
 import microarch.delivery.core.domain.model.kernel.Volume;
+import microarch.delivery.core.ports.GeoPort;
 import microarch.delivery.core.ports.OrderRepositoryPort;
 import microarch.delivery.core.ports.UnitOfWork;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @RequiredArgsConstructor
@@ -20,12 +18,11 @@ public class CreateOrderCommandHandler {
 
     private final OrderRepositoryPort orderRepositoryPort;
     private final UnitOfWork unitOfWork;
+    private final GeoPort geoPort;
 
     @Transactional
     public Result<Order, Error> handle(CreateOrderCommand command) {
-        var random = ThreadLocalRandom.current();
-        var locationRes = Location.create(random.nextInt(Location.X_MIN_VALUE, Location.X_MAX_VALUE + 1),
-                random.nextInt(Location.Y_MIN_VALUE, Location.Y_MAX_VALUE + 1));
+        var locationRes = geoPort.getLocation(command.getStreet());
         if (locationRes.isFailure()) {
             return Result.failure(locationRes.getError());
         }

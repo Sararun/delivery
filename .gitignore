@@ -116,3 +116,9 @@ docker-compose.dev.yml
 
 # === OS системные ===
 Thumbs.db
+
+# MemPalace per-project files (issue #185)
+mempalace.yaml
+entities.json
+# Local per-project palace (vector data — never commit)
+.mempalace/
