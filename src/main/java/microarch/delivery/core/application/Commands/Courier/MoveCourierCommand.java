@@ -16,15 +16,18 @@ public final class MoveCourierCommand {
     private final UUID courierId;
     private final Location location;
 
-    public static Result<MoveCourierCommand, Error> create(UUID courierId, Location location) {
-        var validation = Guard.combine(Guard.againstNullOrEmpty(courierId, "courierId"),
-                Guard.againstNull(location, "location"));
-
-        if (validation != null) {
-            return Result.failure(validation);
+    public static Result<MoveCourierCommand, Error> create(UUID courierId, int x, int y) {
+        var courierValidation = Guard.againstNullOrEmpty(courierId, "courierId");
+        if (courierValidation != null) {
+            return Result.failure(courierValidation);
         }
 
-        return Result.success(new MoveCourierCommand(courierId, location));
+        var locationRes = Location.create(x, y);
+        if (locationRes.isFailure()) {
+            return Result.failure(locationRes.getError());
+        }
+
+        return Result.success(new MoveCourierCommand(courierId, locationRes.getValue()));
     }
 
 }

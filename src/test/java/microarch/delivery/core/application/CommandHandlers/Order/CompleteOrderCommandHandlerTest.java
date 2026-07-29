@@ -37,6 +37,7 @@ class CompleteOrderCommandHandlerTest {
         var order = Order.create(UUID.randomUUID(), location, Volume.create(3).getValue()).getValue();
         var courier = Courier.create("Ivan", location).getValue();
         courier.addOrder(order);
+        order.assign();
 
         var command = CompleteOrderCommand.create(order.getId(), courier.getId()).getValue();
         when(courierRepository.getById(courier.getId())).thenReturn(Optional.of(courier));

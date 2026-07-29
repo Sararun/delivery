@@ -32,7 +32,7 @@ class MoveCourierCommandHandlerTest {
         var courier = Courier.create("Ivan", Location.create(1, 1).getValue()).getValue();
         when(courierRepository.getById(courier.getId())).thenReturn(Optional.of(courier));
         var newLocation = Location.create(5, 5).getValue();
-        var command = MoveCourierCommand.create(courier.getId(), newLocation).getValue();
+        var command = MoveCourierCommand.create(courier.getId(), 5, 5).getValue();
         var handler = new MoveCourierCommandHandler(courierRepository, unitOfWork);
 
         var result = handler.handle(command);
@@ -46,7 +46,7 @@ class MoveCourierCommandHandlerTest {
     void handle_ShouldFail_WhenCourierNotFound() {
         var courierId = UUID.randomUUID();
         when(courierRepository.getById(courierId)).thenReturn(Optional.empty());
-        var command = MoveCourierCommand.create(courierId, Location.create(5, 5).getValue()).getValue();
+        var command = MoveCourierCommand.create(courierId, 5, 5).getValue();
         var handler = new MoveCourierCommandHandler(courierRepository, unitOfWork);
 
         var result = handler.handle(command);

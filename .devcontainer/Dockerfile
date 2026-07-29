@@ -1,6 +1,6 @@
 FROM mcr.microsoft.com/devcontainers/java:1-21-bookworm
 
-ARG MAVEN_VERSION=3.9
+ARG MAVEN_VERSION=3.9.9
 RUN curl -fsSL "https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz" \
         -o /tmp/maven.tar.gz \
  && tar -xzf /tmp/maven.tar.gz -C /opt \
