@@ -31,7 +31,14 @@ public class CompleteOrderCommandHandler {
         var courier = courierRes.get();
         var order = orderRes.get();
         var completeAssigmentRes = courier.completeAssignment(order.getId());
+        if (completeAssigmentRes.isFailure()) {
+            return completeAssigmentRes;
+        }
+        var finishOrderRes = order.finish();
+        if (finishOrderRes.isFailure()) {
+            return finishOrderRes;
+        }
         this.unitOfWork.commit();
-        return completeAssigmentRes;
+        return UnitResult.success();
     }
 }
